@@ -37,15 +37,15 @@ class TaskRepository
             'expiration_date' => $data['expiration_date'],
             'created_at' => $data['created_at'],
         ];
-        $user = $this->task->findOrFail($id);
-        $user->update($newData);
-        return $user;
+        $task = $this->task->findOrFail($id);
+        $task->update($newData);
+        return $task;
     }
 
     public function delete($id)
     {
-        $user = $this->task->findOrFail($id);
-        $user->delete();
+        $task = $this->task->findOrFail($id);
+        $task->delete();
     }
 
     public function findAllTasks($user_id)

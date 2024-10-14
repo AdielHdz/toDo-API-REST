@@ -24,11 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         //
-        $middleware->alias([
-            'tokenValidator' => RequestValidator::class,
-            'abilities' => CheckAbilities::class,
-            'ability' => CheckForAnyAbility::class
-        ]);
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

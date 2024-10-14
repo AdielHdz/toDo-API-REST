@@ -38,7 +38,10 @@ class AuthController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return response()->json(['access_token' => $token, 'token_type' => 'Bearer']);
+            return response()->json([
+                'user_id' => $user->id,
+                'access_token' => $token
+            ]);
         } catch (QueryException $e) {
             return response()->json(['message' => 'Database error: ' . $e->getMessage()], 400);
         } catch (\Throwable $th) {
@@ -62,9 +65,26 @@ class AuthController extends Controller
 
 
             return response()->json([
-                'user' => $newUser,
-                'token' => $token
+                'user_id' => $newUser->id,
+                'access_token' => $token
             ], 201);
+        } catch (QueryException $e) {
+            return response()->json(['message' => 'Database error: ' . $e->getMessage()], 400);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'An error occurred: ' . $th->getMessage()], 500);
+        }
+    }
+
+    public function logout(Request $request)
+    {
+
+        try {
+            $request->user()->currentAccessToken()->delete();
+
+
+            return response()->json([
+                'message' => 'Sesión cerrada correctamente'
+            ], 200);
         } catch (QueryException $e) {
             return response()->json(['message' => 'Database error: ' . $e->getMessage()], 400);
         } catch (\Throwable $th) {

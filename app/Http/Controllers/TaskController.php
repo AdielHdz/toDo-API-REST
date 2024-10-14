@@ -52,7 +52,7 @@ class TaskController extends Controller
             'user_id' => 'required|string',
             'title' => 'required|string',
             'description' => 'required|string',
-            'status' => 'required|string|in:pending, in progress, completed',
+            'status' => 'required|string|in:pending,in progress,completed',
             'expiration_date' => 'required|string',
             'created_at' => 'required|string',
         ]);
@@ -70,8 +70,7 @@ class TaskController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'id' => 'required|int',
-            'user_id' => 'required|int',
+            'id' => 'required|string',
             'title' => 'required|string',
             'description' => 'required|string',
             'status' => 'required|string|in:pending,in progress,completed',
@@ -79,7 +78,7 @@ class TaskController extends Controller
             'created_at' => 'required|string',
         ]);
         try {
-            $updatedTask = $this->taskRepository->update($request->user_id, $request->all());
+            $updatedTask = $this->taskRepository->update($request->id, $request->all());
 
             return response()->json($updatedTask, 201);
         } catch (QueryException $e) {
@@ -91,13 +90,27 @@ class TaskController extends Controller
 
 
 
-    public function storeUserTasks(int $id)
+    public function storeUserTasks(string $id)
     {
         if (!$id) return response()->json(['message' => 'Parameter id is required'], 401);
         try {
             $tasks = $this->taskRepository->findAllTasks($id);
 
             return response()->json($tasks, 200);
+        } catch (QueryException $e) {
+            return response()->json(['message' => 'Database error: ' . $e->getMessage()], 400);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'An error occurred: ' . $th->getMessage()], 500);
+        }
+    }
+
+    public function destroy(string $id)
+    {
+        if (!$id) return response()->json(['message' => 'Parameter id is required'], 401);
+        try {
+            $task = $this->taskRepository->delete($id);
+
+            return response()->json($task, 200);
         } catch (QueryException $e) {
             return response()->json(['message' => 'Database error: ' . $e->getMessage()], 400);
         } catch (\Throwable $th) {
